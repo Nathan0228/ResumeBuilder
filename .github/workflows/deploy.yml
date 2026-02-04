@@ -1,27 +1,47 @@
-name: Deploy Resume App
+name: Build and Deploy to VPS
 
 on:
   push:
-    branches: [ "main" ] # 仅在推送到 main 分支时触发
+    branches: [ "main" ] # 当 main 分支有更新时触发
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      # 远程执行脚本：在 VPS 上拉取最新代码并用 Docker 重新构建
-      - name: Deploy to VPS
+      # 使用 appleboy 的 SSH Action 远程登录 VPS 并执行操作
+      - name: SSH Remote Deployment
         uses: appleboy/ssh-action@master
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          password: ${{ secrets.PASSWORD }}
+          host: ${{ secrets.VPS_HOST }}       # VPS 的 IP 地址
+          username: ${{ secrets.VPS_USER }}   # 通常是 root
+          password: ${{ secrets.VPS_PASSWORD }} # 你的登录密码
+          # 如果你使用 SSH Key 登录，可以换成 key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
           script: |
-            cd /opt/resume-builder  # 你的代码在 VPS 上的路径
-            git pull origin main
-            docker build -t my-resume-app .
-            docker stop resume-container || true
-            docker rm resume-container || true
-            docker run -d --name resume-container --restart always -p 8081:80 my-resume-app
+            # 1. 进入项目目录
+            cd /opt/resume-builder
+            
+            # 2. 强制拉取 GitHub 最新代码
+            git fetch --all
+            git reset --hard origin/main
+            
+            # 3. 使用 Docker 多阶段构建镜像 (这会在 VPS 上构建)
+            # 虽然 GitHub 也可以构建，但在 VPS 构建对个人项目来说配置最简单
+            docker build -t resume-app .
+            
+            # 4. 停止并移除旧容器 (如果存在)
+            docker stop resume-app-container || true
+            docker rm resume-app-container || true
+            
+            # 5. 启动新容器，映射到 8081 端口
+            docker run -d \
+              --name resume-app-container \
+              --restart always \
+              -p 8081:80 \
+              resume-app
+            
+            # 6. 清理无用的镜像碎片 (节省磁盘空间)
+            docker image prune -f
