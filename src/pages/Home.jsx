@@ -3,15 +3,20 @@ import { Link } from 'react-router-dom';
 import { FileText, ArrowRight } from 'lucide-react';
 import Footer from '../components/Footer';
 
+//使用import引用图片，方可在生产环境正常显示
+import mordenImg from '../assets/morden.png';
+import classicalImg from '../assets/classical.png';
+import githubImg from '../assets/github.png';
+import findingthemeImg from '../assets/findingtheme.png';
+
 const TITLE_FULL = '快速制作专业简历';
 const TYPE_INTERVAL = 120;
 
 /** 替换为你的模板样图路径，例如 '/templates/modern.png'；留空则显示占位 */
-const TEMPLATE_IMAGE_1 = 'src/assets/morden.png'; // 现代风格
-const TEMPLATE_IMAGE_2 = 'src/assets/classical.png';//经典风格
-const TEMPLATE_IMAGE_3 = 'src/assets/github.png';//GitHub 风格
-
-const TEMPLATE_IMAGE_4 = 'src/assets/findingtheme.png';//finding your dream jb
+const TEMPLATE_IMAGE_1 = mordenImg; // 现代风格
+const TEMPLATE_IMAGE_2 = classicalImg; //经典风格
+const TEMPLATE_IMAGE_3 = githubImg; //GitHub 风格
+const TEMPLATE_IMAGE_4 = findingthemeImg; //finding your dream jb
 /** 打字机效果：逐字显示文案 */ 
 const TypewriterTitle = () => {
   const [text, setText] = useState('');
@@ -49,7 +54,7 @@ const useInView = (options = {}) => {
     );
     obs.observe(el);
     return () => obs.disconnect();
-  }, []);
+  }, [options]);
 
   return [ref, inView];
 };
