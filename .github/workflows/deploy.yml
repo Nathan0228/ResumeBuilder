@@ -1,0 +1,27 @@
+name: Deploy Resume App
+
+on:
+  push:
+    branches: [ "main" ] # 仅在推送到 main 分支时触发
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 远程执行脚本：在 VPS 上拉取最新代码并用 Docker 重新构建
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          script: |
+            cd /opt/resume-builder  # 你的代码在 VPS 上的路径
+            git pull origin main
+            docker build -t my-resume-app .
+            docker stop resume-container || true
+            docker rm resume-container || true
+            docker run -d --name resume-container --restart always -p 8081:80 my-resume-app
