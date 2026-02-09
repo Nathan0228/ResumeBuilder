@@ -258,7 +258,10 @@ const Builder = () => {
   };
 
   const handleSkillsChange = (e) => {
-    const skillsArray = e.target.value.split(',').map((s) => s.trim());
+    const skillsArray = e.target.value
+      .split(/[,，]/)
+      .map((s) => s.trim())
+      .filter(Boolean);
     setResumeData((prev) => ({ ...prev, skills: skillsArray }));
   };
 
