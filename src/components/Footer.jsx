@@ -1,8 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { FileText, User, ArrowRight } from 'lucide-react';
 
 const Footer = ({ variant = 'default' }) => {
+  const { t } = useTranslation();
   const isMinimal = variant === 'minimal';
 
   return (
@@ -15,31 +17,31 @@ const Footer = ({ variant = 'default' }) => {
               className="inline-flex items-center gap-1.5 hover:text-indigo-600 transition-colors"
             >
               <FileText size={16} />
-              首页
+              {t('nav.home')}
             </Link>
             <Link
               to="/builder"
               className="inline-flex items-center gap-1.5 hover:text-indigo-600 transition-colors"
             >
               <ArrowRight size={16} />
-              制作简历
+              {t('nav.buildResume')}
             </Link>
             <Link
               to="/about"
               className="inline-flex items-center gap-1.5 hover:text-indigo-600 transition-colors"
             >
               <User size={16} />
-              关于作者
+              {t('nav.about')}
             </Link>
           </div>
           {!isMinimal && (
             <p className="text-xs text-slate-400">
-              选择模板 · 编辑区块 · 导出 PDF
+              {t('footer.tagline')}
             </p>
           )}
         </div>
         <p className="mt-3 text-center sm:text-left text-xs text-slate-400">
-          © {new Date().getFullYear()} 简历制作 · 仅供学习与个人使用
+          © {new Date().getFullYear()} {t('nav.appName')} · {t('footer.copyright')}
         </p>
       </div>
     </footer>

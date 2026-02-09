@@ -1,0 +1,8 @@
+# 允许所有爬虫抓取
+User-agent: *
+Allow: /
+
+# 若有后台或不想被收录的路径可写：Disallow: /admin
+
+# 站点地图（部署后请把 yoursite.com 改成你的真实域名）
+Sitemap: https://resume.findingai.top/sitemap.xml

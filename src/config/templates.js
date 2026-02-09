@@ -10,14 +10,14 @@ export const BLOCK_IDS = {
   HONORS: 'honors',
 };
 
-/** 区块显示名称（用于「添加区块」等 UI） */
-export const BLOCK_LABELS = {
-  [BLOCK_IDS.BASIC_INFO]: '基本信息',
-  [BLOCK_IDS.SUMMARY]: '个人评价',
-  [BLOCK_IDS.SKILLS]: '专业技能',
-  [BLOCK_IDS.EXPERIENCE]: '工作经历',
-  [BLOCK_IDS.EDUCATION]: '教育背景',
-  [BLOCK_IDS.HONORS]: '荣誉奖项',
+/** 区块显示名称的 i18n key（用于「添加区块」等 UI） */
+export const BLOCK_LABEL_KEYS = {
+  [BLOCK_IDS.BASIC_INFO]: 'blocks.basicInfo',
+  [BLOCK_IDS.SUMMARY]: 'blocks.summary',
+  [BLOCK_IDS.SKILLS]: 'blocks.skills',
+  [BLOCK_IDS.EXPERIENCE]: 'blocks.experience',
+  [BLOCK_IDS.EDUCATION]: 'blocks.education',
+  [BLOCK_IDS.HONORS]: 'blocks.honors',
 };
 
 /**
@@ -34,8 +34,7 @@ export const LAYOUT_TYPES = {
 export const TEMPLATES = [
   {
     id: 'modern',
-    name: '现代风格',
-    description: '基本信息 + 简介 + 技能 + 经历 + 教育',
+    nameKey: 'templates.modern',
     layout: LAYOUT_TYPES.DEFAULT,
     blockOrder: [
       BLOCK_IDS.BASIC_INFO,
@@ -47,8 +46,7 @@ export const TEMPLATES = [
   },
   {
     id: 'classic',
-    name: '经典风格',
-    description: '基本信息 + 教育 + 经历 + 技能（无简介）',
+    nameKey: 'templates.classic',
     layout: LAYOUT_TYPES.DEFAULT,
     blockOrder: [
       BLOCK_IDS.BASIC_INFO,
@@ -59,8 +57,7 @@ export const TEMPLATES = [
   },
   {
     id: 'github',
-    name: 'GitHub 风格',
-    description: '左侧个人信息与链接，右侧经历/技能等',
+    nameKey: 'templates.github',
     layout: LAYOUT_TYPES.SIDEBAR,
     blockOrder: [
       BLOCK_IDS.BASIC_INFO,

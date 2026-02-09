@@ -1,5 +1,6 @@
 import React, { useState, useRef, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import {
   Plus,
   Trash2,
@@ -14,7 +15,12 @@ import {
   Home,
 } from 'lucide-react';
 import ResumePreview from '../components/preview/ResumePreview';
-import { TEMPLATES, DEFAULT_TEMPLATE_ID, BLOCK_IDS, BLOCK_LABELS } from '../config/templates';
+import LanguageSwitcher from '../components/LanguageSwitcher';
+import MonthYearInput from '../components/MonthYearInput';
+import { TEMPLATES, DEFAULT_TEMPLATE_ID, BLOCK_IDS, BLOCK_LABEL_KEYS } from '../config/templates';
+import { PROVINCE_CODES_CN, PROVINCE_CODES_US, COUNTRIES_WITH_PROVINCES, getCitiesForProvince } from '../data/regions';
+
+const COUNTRY_CODES = ['CN', 'US', 'GB', 'JP', 'DE', 'FR', 'SG', 'AU', 'HK', 'TW', 'OTHER'];
 
 const defaultEducationItem = () => ({
   school: '',
@@ -42,13 +48,16 @@ const defaultHonorsItem = () => ({
   description: '',
 });
 
-const initialResumeData = {
+const initialResumeDataZh = {
   personal: {
     name: '张云帆',
     title: '高级前端工程师',
     email: 'zhang.yunfan@example.com',
     phone: '138-1234-5678',
     location: '上海市, 浦东新区',
+    country: 'CN',
+    province: '31',
+    city: '浦东新区',
     website: 'zhang-dev.io',
     github: 'github.com/zhangyunfan',
     gender: '男',
@@ -99,20 +108,83 @@ const initialResumeData = {
   honors: [],
 };
 
+const initialResumeDataEn = {
+  personal: {
+    name: 'Alex Johnson',
+    title: 'Senior Frontend Engineer',
+    email: 'alex.johnson@example.com',
+    phone: '+1 234-567-8900',
+    location: 'New York, NY',
+    country: 'US',
+    province: 'NY',
+    city: 'New York, NY',
+    website: 'alexjohnson.dev',
+    github: 'github.com/alexjohnson',
+    gender: 'Male',
+    age: '28',
+    photo: null,
+    links: [],
+  },
+  summary:
+    'Full-stack developer focused on high-performance web applications. 5+ years with React and Node.js, strong in component libraries and front-end tooling.',
+  skills: ['React', 'TypeScript', 'Next.js', 'Tailwind CSS', 'Node.js', 'Docker', 'AWS', 'Figma'],
+  experience: [
+    {
+      id: 1,
+      company: 'Tech Innovations Inc.',
+      role: 'Senior Frontend Developer',
+      date: '2021.06 - Present',
+      startDate: '2021-06',
+      endDate: '',
+      isPresent: true,
+      description:
+        'Led refactoring of core CRM system.\nDesigned and built an internal component library based on Ant Design, improving team velocity by 30%.',
+    },
+    {
+      id: 2,
+      company: 'Creative Digital Agency',
+      role: 'Frontend Engineer',
+      date: '2018.07 - 2021.05',
+      startDate: '2018-07',
+      endDate: '2021-05',
+      isPresent: false,
+      description: 'Developed high-traffic e-commerce campaign pages. Owned mobile H5 adaptation and performance optimization.',
+    },
+  ],
+  education: [
+    {
+      id: 1,
+      school: 'State University',
+      degree: 'Computer Science (B.S.)',
+      date: '2014.09 - 2018.06',
+      startDate: '2014-09',
+      endDate: '2018-06',
+      isPresent: false,
+      gpa: '',
+      campusExperience: '',
+      courses: '',
+    },
+  ],
+  honors: [],
+};
+
+const getInitialResumeData = (lng) => (lng === 'en' ? initialResumeDataEn : initialResumeDataZh);
+
 const Builder = () => {
-  const [resumeData, setResumeData] = useState(initialResumeData);
+  const { t, i18n } = useTranslation();
+  const [resumeData, setResumeData] = useState(() => getInitialResumeData(i18n.language));
   const [templateId, setTemplateId] = useState(DEFAULT_TEMPLATE_ID);
   const [blockOrder, setBlockOrder] = useState(() => {
-    const t = TEMPLATES.find((x) => x.id === DEFAULT_TEMPLATE_ID);
-    return t ? [...t.blockOrder] : TEMPLATES[0].blockOrder;
+    const template = TEMPLATES.find((x) => x.id === DEFAULT_TEMPLATE_ID);
+    return template ? [...template.blockOrder] : TEMPLATES[0].blockOrder;
   });
   const [showBlockMenu, setShowBlockMenu] = useState(false);
   const fileInputRef = useRef(null);
 
   const handleTemplateChange = (id) => {
     setTemplateId(id);
-    const t = TEMPLATES.find((x) => x.id === id);
-    if (t) setBlockOrder([...t.blockOrder]);
+    const template = TEMPLATES.find((x) => x.id === id);
+    if (template) setBlockOrder([...template.blockOrder]);
   };
 
   const addBlock = (blockId) => {
@@ -232,50 +304,51 @@ const Builder = () => {
       {/* 左侧编辑器 */}
       <div className="no-print w-full md:w-[450px] bg-white border-r border-gray-200 h-screen overflow-y-auto flex flex-col shadow-xl z-20">
         <div className="sticky top-0 bg-white border-b border-gray-100 p-4 z-10 space-y-4">
-          <div className="flex justify-between items-center">
+          <div className="flex justify-between items-center flex-wrap gap-2">
             <div className="flex items-center gap-3">
-              <Link to="/" className="text-gray-400 hover:text-gray-600" title="返回首页">
+              <Link to="/" className="text-gray-400 hover:text-gray-600" title={t('nav.backHome')}>
                 <Home size={20} />
               </Link>
               <h2 className="text-xl font-bold flex items-center gap-2 text-indigo-600">
-                <Layout size={20} /> 简历编辑器
+                <Layout size={20} /> {t('builder.title')}
               </h2>
             </div>
-            <button
-              onClick={handlePrint}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors shadow-sm"
-            >
-              <Printer size={16} /> 导出 PDF
-            </button>
+            <div className="flex items-center gap-2">
+              <LanguageSwitcher className="!border-gray-200" />
+              <button
+                onClick={handlePrint}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2 transition-colors shadow-sm"
+              >
+                <Printer size={16} /> {t('nav.exportPdf')}
+              </button>
+            </div>
           </div>
 
-          {/* 选择模板 */}
           <div>
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 mb-2">
-              <Layers size={14} /> 选择模板
+              <Layers size={14} /> {t('builder.selectTemplate')}
             </label>
             <div className="flex gap-2">
-              {TEMPLATES.map((t) => (
+              {TEMPLATES.map((tmpl) => (
                 <button
-                  key={t.id}
+                  key={tmpl.id}
                   type="button"
-                  onClick={() => handleTemplateChange(t.id)}
+                  onClick={() => handleTemplateChange(tmpl.id)}
                   className={`flex-1 text-left px-3 py-2.5 rounded-lg border text-sm transition-colors ${
-                    templateId === t.id
+                    templateId === tmpl.id
                       ? 'border-indigo-500 bg-indigo-50 text-indigo-700 font-medium'
                       : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300'
                   }`}
                 >
-                  {t.name}
+                  {t(tmpl.nameKey)}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* 添加 / 管理区块 */}
           <div>
             <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider flex items-center gap-1.5 mb-2">
-              简历区块
+              {t('builder.resumeBlocks')}
             </label>
             <div className="flex flex-wrap gap-1.5 mb-2">
               {blockOrder.map((id) => (
@@ -283,12 +356,12 @@ const Builder = () => {
                   key={id}
                   className="inline-flex items-center gap-1 bg-gray-100 text-gray-700 px-2.5 py-1 rounded-md text-xs"
                 >
-                  {BLOCK_LABELS[id]}
+                  {t(BLOCK_LABEL_KEYS[id])}
                   <button
                     type="button"
                     onClick={() => removeBlock(id)}
                     className="text-gray-400 hover:text-red-500 ml-0.5"
-                    title="移除区块"
+                    title={t('builder.removeBlock')}
                   >
                     <Trash2 size={12} />
                   </button>
@@ -301,7 +374,7 @@ const Builder = () => {
                 onClick={() => setShowBlockMenu(!showBlockMenu)}
                 className="w-full flex items-center justify-center gap-2 py-2 border border-dashed border-gray-300 rounded-lg text-sm text-gray-500 hover:border-indigo-400 hover:text-indigo-600 transition-colors"
               >
-                <Plus size={16} /> 添加区块
+                <Plus size={16} /> {t('builder.addBlock')}
                 <ChevronDown size={14} className={showBlockMenu ? 'rotate-180' : ''} />
               </button>
               {showBlockMenu && availableBlocksToAdd.length > 0 && (
@@ -313,7 +386,7 @@ const Builder = () => {
                       onClick={() => addBlock(id)}
                       className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-indigo-50 hover:text-indigo-700"
                     >
-                      {BLOCK_LABELS[id]}
+                      {t(BLOCK_LABEL_KEYS[id])}
                     </button>
                   ))}
                 </div>
@@ -325,7 +398,7 @@ const Builder = () => {
         <div className="p-6 space-y-8 pb-20 text-sm">
           <section className="space-y-4">
             <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-              <Type size={14} /> 基本资料
+              <Type size={14} /> {t('builder.basicInfo')}
             </h3>
             <div
               className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg border border-dashed border-gray-300 cursor-pointer"
@@ -337,40 +410,130 @@ const Builder = () => {
                 ) : (
                   <>
                     <Camera size={20} className="text-gray-500" />
-                    <span className="text-[10px] mt-1 text-gray-500">上传照片</span>
+                    <span className="text-[10px] mt-1 text-gray-500">{t('builder.uploadPhoto')}</span>
                   </>
                 )}
               </div>
               <input type="file" ref={fileInputRef} onChange={handlePhotoUpload} className="hidden" accept="image/*" />
-              <span className="text-xs text-gray-500">支持 JPG/PNG，建议 3:4</span>
+              <span className="text-xs text-gray-500">{t('builder.photoHint')}</span>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <input name="name" placeholder="姓名" value={resumeData.personal.name} onChange={handlePersonalChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:ring-1 focus:ring-indigo-500" />
-              <input name="title" placeholder="职位头衔" value={resumeData.personal.title} onChange={handlePersonalChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:ring-1 focus:ring-indigo-500" />
+              <input name="name" placeholder={t('builder.name')} value={resumeData.personal.name} onChange={handlePersonalChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:ring-1 focus:ring-indigo-500" />
+              <input name="title" placeholder={t('builder.jobTitle')} value={resumeData.personal.title} onChange={handlePersonalChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:ring-1 focus:ring-indigo-500" />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <select name="gender" value={resumeData.personal.gender} onChange={handlePersonalChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:ring-1 focus:ring-indigo-500">
-                <option value="男">男</option>
-                <option value="女">女</option>
-                <option value="保密">保密</option>
+                <option value="男">{t('builder.male')}</option>
+                <option value="女">{t('builder.female')}</option>
+                <option value="保密">{t('builder.preferNotSay')}</option>
               </select>
-              <input name="age" type="number" placeholder="年龄" value={resumeData.personal.age} onChange={handlePersonalChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:ring-1 focus:ring-indigo-500" />
+              <input name="age" type="number" placeholder={t('builder.age')} value={resumeData.personal.age} onChange={handlePersonalChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none focus:ring-1 focus:ring-indigo-500" />
             </div>
-            <input name="email" placeholder="邮箱" value={resumeData.personal.email} onChange={handlePersonalChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none" />
-            <input name="phone" placeholder="电话" value={resumeData.personal.phone} onChange={handlePersonalChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none" />
-            <input name="location" placeholder="地址" value={resumeData.personal.location} onChange={handlePersonalChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none" />
+            <input name="email" placeholder={t('builder.email')} value={resumeData.personal.email} onChange={handlePersonalChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none" />
+            <input name="phone" placeholder={t('builder.phone')} value={resumeData.personal.phone} onChange={handlePersonalChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none" />
+            <div className="space-y-2">
+              <select
+                name="country"
+                value={resumeData.personal.country || ''}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setResumeData((prev) => ({
+                    ...prev,
+                    personal: { ...prev.personal, country: v, province: '', city: '' },
+                  }));
+                }}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none"
+                aria-label={t('builder.selectCountry')}
+              >
+                <option value="">{t('builder.selectCountry')}</option>
+                {COUNTRY_CODES.map((code) => (
+                  <option key={code} value={code}>{t(`countries.${code}`)}</option>
+                ))}
+              </select>
+              {COUNTRIES_WITH_PROVINCES.includes(resumeData.personal.country) && (
+                <select
+                  name="province"
+                  value={resumeData.personal.province || ''}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setResumeData((prev) => ({
+                      ...prev,
+                      personal: { ...prev.personal, province: v, city: '' },
+                    }));
+                  }}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none"
+                  aria-label={t('builder.selectProvince')}
+                >
+                  <option value="">{t('builder.selectProvince')}</option>
+                  {(resumeData.personal.country === 'CN' ? PROVINCE_CODES_CN : PROVINCE_CODES_US).map((code) => (
+                    <option key={code} value={code}>
+                      {t(`region.${resumeData.personal.country}.${code}`)}
+                    </option>
+                  ))}
+                </select>
+              )}
+              {resumeData.personal.country === 'CN' && resumeData.personal.province ? (
+                (() => {
+                  const cities = getCitiesForProvince(resumeData.personal.province);
+                  const cityValue = resumeData.personal.city ?? '';
+                  const otherOption = '其他';
+                  const isOther = cityValue === otherOption || (cityValue && !cities.includes(cityValue));
+                  return (
+                    <div className="space-y-1">
+                      <select
+                        name="city"
+                        value={cities.includes(cityValue) ? cityValue : otherOption}
+                        onChange={(e) => {
+                          const v = e.target.value;
+                          setResumeData((prev) => ({
+                            ...prev,
+                            personal: {
+                              ...prev.personal,
+                              city: v === otherOption ? '' : v,
+                            },
+                          }));
+                        }}
+                        className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none"
+                        aria-label={t('builder.selectCity')}
+                      >
+                        {cities.map((c) => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                      </select>
+                      {isOther && (
+                        <input
+                          name="city"
+                          placeholder={t('builder.cityPlaceholder')}
+                          value={cityValue}
+                          onChange={handlePersonalChange}
+                          className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none text-sm"
+                        />
+                      )}
+                    </div>
+                  );
+                })()
+              ) : (
+                <input
+                  name="city"
+                  placeholder={t('builder.cityPlaceholder')}
+                  value={resumeData.personal.city ?? ''}
+                  onChange={handlePersonalChange}
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none"
+                />
+              )}
+            </div>
             <div>
               <div className="flex justify-between items-center mb-2">
-                <span className="text-xs font-semibold text-gray-500">个人链接</span>
+                <span className="text-xs font-semibold text-gray-500">{t('builder.personalLinks')}</span>
                 <button type="button" onClick={addLink} className="text-indigo-600 hover:text-indigo-700 text-xs font-medium flex items-center gap-1">
-                  <Plus size={12} /> 添加链接
+                  <Plus size={12} /> {t('builder.addLink')}
                 </button>
               </div>
               {links.map((link) => (
                 <div key={link.id} className="flex gap-2 mb-2">
-                  <input value={link.label ?? ''} onChange={(e) => updateLink(link.id, 'label', e.target.value)} className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm" placeholder="名称 如 GitHub" />
-                  <input value={link.url ?? ''} onChange={(e) => updateLink(link.id, 'url', e.target.value)} className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm" placeholder="URL" />
-                  <button type="button" onClick={() => removeLink(link.id)} className="text-gray-400 hover:text-red-500 shrink-0" title="删除">
+                  <input value={link.label ?? ''} onChange={(e) => updateLink(link.id, 'label', e.target.value)} className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm" placeholder={t('builder.linkLabelPlaceholder')} />
+                  <input value={link.url ?? ''} onChange={(e) => updateLink(link.id, 'url', e.target.value)} className="flex-1 border border-gray-300 rounded px-2 py-1 text-sm" placeholder={t('builder.linkUrlPlaceholder')} />
+                  <button type="button" onClick={() => removeLink(link.id)} className="text-gray-400 hover:text-red-500 shrink-0" title={t('builder.delete')}>
                     <Trash2 size={14} />
                   </button>
                 </div>
@@ -381,20 +544,20 @@ const Builder = () => {
           <hr className="border-gray-100" />
 
           <section className="space-y-3">
-            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">个人评价</h3>
-            <textarea value={resumeData.summary} onChange={handleSummaryChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none h-32 resize-none leading-relaxed" placeholder="核心优势..." />
+            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">{t('builder.summary')}</h3>
+            <textarea value={resumeData.summary} onChange={handleSummaryChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none h-32 resize-none leading-relaxed" placeholder={t('builder.summaryPlaceholder')} />
           </section>
 
           <section className="space-y-3">
-            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">技能清单</h3>
-            <textarea value={resumeData.skills.join(', ')} onChange={handleSkillsChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none h-20 resize-none" placeholder="用逗号分隔..." />
+            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">{t('builder.skills')}</h3>
+            <textarea value={resumeData.skills.join(', ')} onChange={handleSkillsChange} className="w-full border border-gray-300 rounded-lg px-3 py-2 outline-none h-20 resize-none" placeholder={t('builder.skillsPlaceholder')} />
           </section>
 
           <section className="space-y-4">
             <div className="flex justify-between items-center">
-              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">工作经历</h3>
+              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider">{t('builder.experience')}</h3>
               <button type="button" onClick={() => addItem('experience', defaultExperienceItem())} className="text-indigo-600 hover:text-indigo-700 text-xs font-medium flex items-center gap-1">
-                <Plus size={14} /> 添加
+                <Plus size={14} /> {t('builder.add')}
               </button>
             </div>
             {resumeData.experience.map((exp) => (
@@ -403,21 +566,21 @@ const Builder = () => {
                   <Trash2 size={16} />
                 </button>
                 <div className="space-y-3 pr-8">
-                  <input value={exp.company} onChange={(e) => updateList('experience', exp.id, 'company', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm" placeholder="公司" />
-                  <input value={exp.role} onChange={(e) => updateList('experience', exp.id, 'role', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm" placeholder="职位" />
+                  <input value={exp.company} onChange={(e) => updateList('experience', exp.id, 'company', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm" placeholder={t('builder.company')} />
+                  <input value={exp.role} onChange={(e) => updateList('experience', exp.id, 'role', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm" placeholder={t('builder.role')} />
                   <div className="grid grid-cols-2 gap-2">
-                    <label className="col-span-2 flex items-center gap-2 text-xs text-gray-600">
-                      <span className="shrink-0">时间</span>
-                      <input type="month" value={exp.startDate ?? ''} onChange={(e) => updateList('experience', exp.id, 'startDate', e.target.value)} className="flex-1 border border-gray-300 rounded px-2 py-1.5 text-sm" title="开始时间" />
-                      <span className="text-gray-400">至</span>
-                      <input type="month" value={exp.isPresent ? '' : (exp.endDate ?? '')} onChange={(e) => updateList('experience', exp.id, 'endDate', e.target.value)} disabled={exp.isPresent} className="flex-1 border border-gray-300 rounded px-2 py-1.5 text-sm disabled:bg-gray-100 disabled:text-gray-400" title="结束时间" />
+                    <label className="col-span-2 flex items-center gap-2 text-xs text-gray-600 flex-wrap">
+                      <span className="shrink-0">{t('builder.time')}</span>
+                      <MonthYearInput value={exp.startDate ?? ''} onChange={(v) => updateList('experience', exp.id, 'startDate', v)} title={t('builder.startTime')} className="flex-1 min-w-0" />
+                      <span className="text-gray-400">{t('builder.to')}</span>
+                      <MonthYearInput value={exp.isPresent ? '' : (exp.endDate ?? '')} onChange={(v) => updateList('experience', exp.id, 'endDate', v)} disabled={exp.isPresent} title={t('builder.endTime')} className="flex-1 min-w-0" />
                       <label className="flex items-center gap-1 shrink-0 whitespace-nowrap">
                         <input type="checkbox" checked={!!exp.isPresent} onChange={(e) => updateList('experience', exp.id, 'isPresent', e.target.checked)} className="rounded border-gray-300" />
-                        至今
+                        {t('builder.present')}
                       </label>
                     </label>
                   </div>
-                  <textarea value={exp.description} onChange={(e) => updateList('experience', exp.id, 'description', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm h-20" placeholder="描述" />
+                  <textarea value={exp.description} onChange={(e) => updateList('experience', exp.id, 'description', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm h-20" placeholder={t('builder.description')} />
                 </div>
               </div>
             ))}
@@ -426,10 +589,10 @@ const Builder = () => {
           <section className="space-y-4">
             <div className="flex justify-between items-center">
               <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                <GraduationCap size={14} /> 教育背景
+                <GraduationCap size={14} /> {t('builder.education')}
               </h3>
               <button type="button" onClick={() => addItem('education', defaultEducationItem())} className="text-indigo-600 hover:text-indigo-700 text-xs font-medium flex items-center gap-1">
-                <Plus size={14} /> 添加
+                <Plus size={14} /> {t('builder.add')}
               </button>
             </div>
             {resumeData.education.map((edu) => (
@@ -438,23 +601,23 @@ const Builder = () => {
                   <Trash2 size={16} />
                 </button>
                 <div className="space-y-3 pr-8">
-                  <input value={edu.school ?? ''} onChange={(e) => updateList('education', edu.id, 'school', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm" placeholder="学校" />
-                  <input value={edu.degree ?? ''} onChange={(e) => updateList('education', edu.id, 'degree', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm" placeholder="专业/学历" />
+                  <input value={edu.school ?? ''} onChange={(e) => updateList('education', edu.id, 'school', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm" placeholder={t('builder.school')} />
+                  <input value={edu.degree ?? ''} onChange={(e) => updateList('education', edu.id, 'degree', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm" placeholder={t('builder.degree')} />
                   <div className="grid grid-cols-2 gap-2">
                     <label className="col-span-2 flex items-center gap-2 text-xs text-gray-600 flex-wrap">
-                      <span className="shrink-0">时间</span>
-                      <input type="month" value={edu.startDate ?? ''} onChange={(e) => updateList('education', edu.id, 'startDate', e.target.value)} className="flex-1 min-w-0 border border-gray-300 rounded px-2 py-1.5 text-sm" title="开始时间" />
-                      <span className="text-gray-400">至</span>
-                      <input type="month" value={edu.isPresent ? '' : (edu.endDate ?? '')} onChange={(e) => updateList('education', edu.id, 'endDate', e.target.value)} disabled={!!edu.isPresent} className="flex-1 min-w-0 border border-gray-300 rounded px-2 py-1.5 text-sm disabled:bg-gray-100 disabled:text-gray-400" title="结束时间" />
+                      <span className="shrink-0">{t('builder.time')}</span>
+                      <MonthYearInput value={edu.startDate ?? ''} onChange={(v) => updateList('education', edu.id, 'startDate', v)} title={t('builder.startTime')} className="flex-1 min-w-0" />
+                      <span className="text-gray-400">{t('builder.to')}</span>
+                      <MonthYearInput value={edu.isPresent ? '' : (edu.endDate ?? '')} onChange={(v) => updateList('education', edu.id, 'endDate', v)} disabled={!!edu.isPresent} title={t('builder.endTime')} className="flex-1 min-w-0" />
                       <label className="flex items-center gap-1 shrink-0 whitespace-nowrap">
                         <input type="checkbox" checked={!!edu.isPresent} onChange={(e) => updateList('education', edu.id, 'isPresent', e.target.checked)} className="rounded border-gray-300" />
-                        至今
+                        {t('builder.present')}
                       </label>
                     </label>
                   </div>
-                  <input value={edu.gpa ?? ''} onChange={(e) => updateList('education', edu.id, 'gpa', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm" placeholder="GPA 如 3.8/4.0" />
-                  <textarea value={edu.campusExperience ?? ''} onChange={(e) => updateList('education', edu.id, 'campusExperience', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm min-h-[60px] resize-y" placeholder="校内经历（社团、竞赛、项目等）" />
-                  <textarea value={edu.courses ?? ''} onChange={(e) => updateList('education', edu.id, 'courses', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm min-h-[60px] resize-y" placeholder="所修课程（每行一门或逗号分隔）" />
+                  <input value={edu.gpa ?? ''} onChange={(e) => updateList('education', edu.id, 'gpa', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm" placeholder={t('builder.gpaPlaceholder')} />
+                  <textarea value={edu.campusExperience ?? ''} onChange={(e) => updateList('education', edu.id, 'campusExperience', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm min-h-[60px] resize-y" placeholder={t('builder.campusExperience')} />
+                  <textarea value={edu.courses ?? ''} onChange={(e) => updateList('education', edu.id, 'courses', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm min-h-[60px] resize-y" placeholder={t('builder.courses')} />
                 </div>
               </div>
             ))}
@@ -463,10 +626,10 @@ const Builder = () => {
           <section className="space-y-4">
             <div className="flex justify-between items-center">
               <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
-                <Award size={14} /> 荣誉奖项
+                <Award size={14} /> {t('builder.honors')}
               </h3>
               <button type="button" onClick={() => addItem('honors', defaultHonorsItem())} className="text-indigo-600 hover:text-indigo-700 text-xs font-medium flex items-center gap-1">
-                <Plus size={14} /> 添加
+                <Plus size={14} /> {t('builder.add')}
               </button>
             </div>
             {resumeData.honors.map((item) => (
@@ -475,9 +638,9 @@ const Builder = () => {
                   <Trash2 size={16} />
                 </button>
                 <div className="space-y-3 pr-8">
-                  <input value={item.title ?? ''} onChange={(e) => updateList('honors', item.id, 'title', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm" placeholder="奖项名称" />
-                  <input type="month" value={item.date ?? ''} onChange={(e) => updateList('honors', item.id, 'date', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm" placeholder="获奖时间" title="获奖时间" />
-                  <textarea value={item.description ?? ''} onChange={(e) => updateList('honors', item.id, 'description', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm min-h-[50px] resize-y" placeholder="简要说明（可选）" />
+                  <input value={item.title ?? ''} onChange={(e) => updateList('honors', item.id, 'title', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm" placeholder={t('builder.awardName')} />
+                  <MonthYearInput value={item.date ?? ''} onChange={(v) => updateList('honors', item.id, 'date', v)} className="w-full" title={t('builder.awardTime')} />
+                  <textarea value={item.description ?? ''} onChange={(e) => updateList('honors', item.id, 'description', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm min-h-[50px] resize-y" placeholder={t('builder.awardDesc')} />
                 </div>
               </div>
             ))}

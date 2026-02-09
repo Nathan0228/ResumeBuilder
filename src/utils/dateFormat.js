@@ -14,11 +14,12 @@ export const monthToDisplay = (yyyyMm) => {
  * @param {string} endDate - YYYY-MM 或空
  * @param {boolean} isPresent - 是否“至今”
  * @param {string} fallback - 旧数据没有 startDate 时的回退文案
+ * @param {string} presentLabel - “至今”的翻译，如 '至今' / 'Present'
  */
-export const formatDateRange = (startDate, endDate, isPresent, fallback = '') => {
+export const formatDateRange = (startDate, endDate, isPresent, fallback = '', presentLabel = '至今') => {
   if (startDate) {
     const start = monthToDisplay(startDate);
-    if (isPresent || !endDate) return `${start} - 至今`;
+    if (isPresent || !endDate) return `${start} - ${presentLabel}`;
     return `${start} - ${monthToDisplay(endDate)}`;
   }
   return fallback;

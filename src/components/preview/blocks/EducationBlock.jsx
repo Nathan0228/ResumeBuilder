@@ -1,8 +1,9 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { formatDateRange } from '../../../utils/dateFormat';
 
-/** 简历预览 - 教育背景区块（含校内经历、GPA、所修课程） */
 const EducationBlock = ({ data }) => {
+  const { t } = useTranslation();
   const { education } = data;
   if (!education?.length) return null;
 
@@ -17,7 +18,7 @@ const EducationBlock = ({ data }) => {
   return (
     <section>
       <h3 className="text-xs font-bold text-gray-900 uppercase tracking-[0.2em] mb-6 border-l-4 border-indigo-600 pl-3">
-        教育背景
+        {t('blocks.education')}
       </h3>
       <div className="space-y-5">
         {education.map((edu) => (
@@ -33,7 +34,7 @@ const EducationBlock = ({ data }) => {
                 </div>
               </div>
               <span className="text-xs text-gray-500 font-bold font-mono shrink-0">
-                {formatDateRange(edu.startDate, edu.endDate, edu.isPresent, edu.date)}
+                {formatDateRange(edu.startDate, edu.endDate, edu.isPresent, edu.date, t('builder.present'))}
               </span>
             </div>
             {edu.campusExperience && (
@@ -43,7 +44,7 @@ const EducationBlock = ({ data }) => {
             )}
             {edu.courses && parseCourses(edu.courses).length > 0 && (
               <div className="text-[12px] text-gray-500">
-                <span className="font-medium text-gray-600">主修课程：</span>
+                <span className="font-medium text-gray-600">{t('builder.mainCourses')}</span>
                 {parseCourses(edu.courses).join('、')}
               </div>
             )}

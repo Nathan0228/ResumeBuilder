@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import rehypeRaw from 'rehype-raw';
 import { FileText, ArrowLeft } from 'lucide-react';
 import Footer from '../components/Footer';
-import aboutContent from '../content/about.md?raw';
+import aboutZh from '../content/about.zh.md?raw';
+import aboutEn from '../content/about.en.md?raw';
 import wechatImg from '../assets/wechat.JPG';
 import alipayImg from '../assets/alipay.JPG';
 
@@ -16,6 +18,8 @@ const SUPPORT_IMAGES = {
 };
 
 const About = () => {
+  const { t, i18n } = useTranslation();
+  const aboutContent = i18n.language === 'en' ? aboutEn : aboutZh;
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-indigo-50 flex flex-col">
       <header className="px-6 py-5 border-b border-slate-200/80 bg-white/70 backdrop-blur-sm sticky top-0 z-20">
@@ -24,17 +28,17 @@ const About = () => {
             to="/"
             className="text-slate-600 hover:text-slate-900 inline-flex items-center gap-2 text-sm font-medium transition-colors"
           >
-            <ArrowLeft size={18} /> 返回首页
+            <ArrowLeft size={18} /> {t('nav.backHome')}
           </Link>
           <span className="text-lg font-bold text-slate-800 flex items-center gap-2">
             <FileText className="text-indigo-600" size={22} />
-            关于
+            {t('about.pageTitle')}
           </span>
           <Link
             to="/builder"
             className="text-sm font-medium text-indigo-600 hover:text-indigo-700 transition-colors"
           >
-            制作简历
+            {t('nav.buildResume')}
           </Link>
         </div>
       </header>

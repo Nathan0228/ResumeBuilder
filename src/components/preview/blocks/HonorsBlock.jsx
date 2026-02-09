@@ -1,14 +1,15 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { monthToDisplay } from '../../../utils/dateFormat';
 
-/** 简历预览 - 荣誉奖项区块 */
 const HonorsBlock = ({ data }) => {
+  const { t } = useTranslation();
   const { honors } = data;
   if (!honors?.length) return null;
   return (
     <section>
       <h3 className="text-xs font-bold text-gray-900 uppercase tracking-[0.2em] mb-6 border-l-4 border-indigo-600 pl-3">
-        荣誉奖项
+        {t('blocks.honors')}
       </h3>
       <div className="space-y-2">
         {honors.map((item) => (
