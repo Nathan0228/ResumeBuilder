@@ -8,6 +8,9 @@ export const BLOCK_IDS = {
   EXPERIENCE: 'experience',
   EDUCATION: 'education',
   HONORS: 'honors',
+  INTERNSHIPS: 'internships',
+  CERTIFICATIONS: 'certifications',
+  EXAM_INFO: 'examInfo',
 };
 
 /** 区块显示名称的 i18n key（用于「添加区块」等 UI） */
@@ -18,6 +21,9 @@ export const BLOCK_LABEL_KEYS = {
   [BLOCK_IDS.EXPERIENCE]: 'blocks.experience',
   [BLOCK_IDS.EDUCATION]: 'blocks.education',
   [BLOCK_IDS.HONORS]: 'blocks.honors',
+  [BLOCK_IDS.INTERNSHIPS]: 'blocks.internships',
+  [BLOCK_IDS.CERTIFICATIONS]: 'blocks.certifications',
+  [BLOCK_IDS.EXAM_INFO]: 'blocks.examInfo',
 };
 
 /**
@@ -67,6 +73,19 @@ export const TEMPLATES = [
       BLOCK_IDS.EDUCATION,
       BLOCK_IDS.HONORS,
     ],
+  },
+  {
+    id: 'ats-friendly',
+    nameKey: 'templates.ats-friendly',
+    layout: LAYOUT_TYPES.DEFAULT,
+    blockOrder:[
+      BLOCK_IDS.BASIC_INFO,
+      BLOCK_IDS.EDUCATION,
+      BLOCK_IDS.INTERNSHIPS,
+      BLOCK_IDS.EXPERIENCE,
+      BLOCK_IDS.SKILLS,
+      BLOCK_IDS.CERTIFICATIONS,
+    ]
   },
 ];
 

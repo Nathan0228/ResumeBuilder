@@ -13,6 +13,9 @@ import {
   Layers,
   ChevronDown,
   Home,
+  Briefcase,
+  FileCheck,
+  ClipboardList,
 } from 'lucide-react';
 import ResumePreview from '../components/preview/ResumePreview';
 import LanguageSwitcher from '../components/LanguageSwitcher';
@@ -46,6 +49,34 @@ const defaultHonorsItem = () => ({
   title: '',
   date: '',
   description: '',
+});
+const defaultInternshipItem = () => ({
+  company: '',
+  role: '',
+  date: '',
+  startDate: '',
+  endDate: '',
+  isPresent: false,
+  description: '',
+});
+const defaultCertificationItem = () => ({
+  name: '',
+  issuer: '',
+  date: '',
+  description: '',
+});
+
+const defaultExamInfo = () => ({
+  university: '',
+  major: '',
+  degreeType: '', // 'professional' | 'academic'
+  politics: '',
+  english: '',
+  course1: '',
+  course2: '',
+  course1Name: '',
+  course2Name: '',
+  totalScore: '',
 });
 
 const initialResumeDataZh = {
@@ -91,6 +122,7 @@ const initialResumeDataZh = {
       description: '参与多个大型电商活动页面的开发，抗住千万级 PV 流量。\n负责移动端 H5 适配与性能优化。',
     },
   ],
+  internships: [],
   education: [
     {
       id: 1,
@@ -105,7 +137,9 @@ const initialResumeDataZh = {
       courses: '',
     },
   ],
+  certifications: [],
   honors: [],
+  examInfo: defaultExamInfo(),
 };
 
 const initialResumeDataEn = {
@@ -151,6 +185,7 @@ const initialResumeDataEn = {
       description: 'Developed high-traffic e-commerce campaign pages. Owned mobile H5 adaptation and performance optimization.',
     },
   ],
+  internships: [],
   education: [
     {
       id: 1,
@@ -165,7 +200,9 @@ const initialResumeDataEn = {
       courses: '',
     },
   ],
+  certifications: [],
   honors: [],
+  examInfo: defaultExamInfo(),
 };
 
 const getInitialResumeData = (lng) => (lng === 'en' ? initialResumeDataEn : initialResumeDataZh);
@@ -283,6 +320,13 @@ const Builder = () => {
     setResumeData((prev) => ({
       ...prev,
       [section]: prev[section].filter((item) => item.id !== id),
+    }));
+  };
+
+  const handleExamInfoChange = (field, value) => {
+    setResumeData((prev) => ({
+      ...prev,
+      examInfo: { ...(prev.examInfo || defaultExamInfo()), [field]: value },
     }));
   };
 
@@ -592,6 +636,41 @@ const Builder = () => {
           <section className="space-y-4">
             <div className="flex justify-between items-center">
               <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                <Briefcase size={14} /> {t('builder.internships')}
+              </h3>
+              <button type="button" onClick={() => addItem('internships', defaultInternshipItem())} className="text-indigo-600 hover:text-indigo-700 text-xs font-medium flex items-center gap-1">
+                <Plus size={14} /> {t('builder.add')}
+              </button>
+            </div>
+            {(resumeData.internships || []).map((it) => (
+              <div key={it.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200 relative group">
+                <button type="button" onClick={() => removeItem('internships', it.id)} className="absolute top-3 right-3 text-gray-400 hover:text-red-500">
+                  <Trash2 size={16} />
+                </button>
+                <div className="space-y-3 pr-8">
+                  <input value={it.company} onChange={(e) => updateList('internships', it.id, 'company', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm" placeholder={t('builder.company')} />
+                  <input value={it.role} onChange={(e) => updateList('internships', it.id, 'role', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm" placeholder={t('builder.role')} />
+                  <div className="grid grid-cols-2 gap-2">
+                    <label className="col-span-2 flex items-center gap-2 text-xs text-gray-600 flex-wrap">
+                      <span className="shrink-0">{t('builder.time')}</span>
+                      <MonthYearInput value={it.startDate ?? ''} onChange={(v) => updateList('internships', it.id, 'startDate', v)} title={t('builder.startTime')} className="flex-1 min-w-0" />
+                      <span className="text-gray-400">{t('builder.to')}</span>
+                      <MonthYearInput value={it.isPresent ? '' : (it.endDate ?? '')} onChange={(v) => updateList('internships', it.id, 'endDate', v)} disabled={it.isPresent} title={t('builder.endTime')} className="flex-1 min-w-0" />
+                      <label className="flex items-center gap-1 shrink-0 whitespace-nowrap">
+                        <input type="checkbox" checked={!!it.isPresent} onChange={(e) => updateList('internships', it.id, 'isPresent', e.target.checked)} className="rounded border-gray-300" />
+                        {t('builder.present')}
+                      </label>
+                    </label>
+                  </div>
+                  <textarea value={it.description} onChange={(e) => updateList('internships', it.id, 'description', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm h-20" placeholder={t('builder.description')} />
+                </div>
+              </div>
+            ))}
+          </section>
+
+          <section className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
                 <GraduationCap size={14} /> {t('builder.education')}
               </h3>
               <button type="button" onClick={() => addItem('education', defaultEducationItem())} className="text-indigo-600 hover:text-indigo-700 text-xs font-medium flex items-center gap-1">
@@ -624,6 +703,81 @@ const Builder = () => {
                 </div>
               </div>
             ))}
+          </section>
+
+          <section className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                <FileCheck size={14} /> {t('builder.certifications')}
+              </h3>
+              <button type="button" onClick={() => addItem('certifications', defaultCertificationItem())} className="text-indigo-600 hover:text-indigo-700 text-xs font-medium flex items-center gap-1">
+                <Plus size={14} /> {t('builder.add')}
+              </button>
+            </div>
+            {(resumeData.certifications || []).map((item) => (
+              <div key={item.id} className="bg-gray-50 rounded-lg p-4 border border-gray-200 relative group">
+                <button type="button" onClick={() => removeItem('certifications', item.id)} className="absolute top-3 right-3 text-gray-400 hover:text-red-500">
+                  <Trash2 size={16} />
+                </button>
+                <div className="space-y-3 pr-8">
+                  <input value={item.name ?? ''} onChange={(e) => updateList('certifications', item.id, 'name', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm" placeholder={t('builder.certName')} />
+                  <input value={item.issuer ?? ''} onChange={(e) => updateList('certifications', item.id, 'issuer', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm" placeholder={t('builder.certIssuer')} />
+                  <MonthYearInput value={item.date ?? ''} onChange={(v) => updateList('certifications', item.id, 'date', v)} className="w-full" title={t('builder.certTime')} />
+                  <textarea value={item.description ?? ''} onChange={(e) => updateList('certifications', item.id, 'description', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm min-h-[50px] resize-y" placeholder={t('builder.certDesc')} />
+                </div>
+              </div>
+            ))}
+          </section>
+
+          <section className="space-y-4">
+            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider flex items-center gap-2">
+              <ClipboardList size={14} /> {t('builder.examInfo')}
+            </h3>
+            <div className="space-y-3">
+              <input value={resumeData.examInfo?.university ?? ''} onChange={(e) => handleExamInfoChange('university', e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder={t('builder.targetUniversity')} />
+              <input value={resumeData.examInfo?.major ?? ''} onChange={(e) => handleExamInfoChange('major', e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm" placeholder={t('builder.targetMajor')} />
+              <select value={resumeData.examInfo?.degreeType ?? ''} onChange={(e) => handleExamInfoChange('degreeType', e.target.value)} className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+                <option value="">{t('builder.degreeType')}</option>
+                <option value="professional">{t('builder.professionalMaster')}</option>
+                <option value="academic">{t('builder.academicMaster')}</option>
+              </select>
+            </div>
+            <div className="text-xs font-semibold text-gray-500 mt-2">{t('builder.preliminaryScores')}</div>
+            <div className="overflow-x-auto">
+              <table className="w-full border border-gray-300 rounded-lg text-sm">
+                <tbody>
+                  <tr className="bg-gray-50">
+                    <th rowSpan={2} className="border border-gray-300 px-2 py-2 text-left align-middle w-24">{t('builder.preliminaryScores')}</th>
+                    <th className="border border-gray-300 px-2 py-1.5 text-center font-medium">{t('builder.politics')}</th>
+                    <th className="border border-gray-300 px-2 py-1.5 text-center font-medium">{t('builder.english')}</th>
+                    <th className="border border-gray-300 px-2 py-1.5 text-center font-medium">{t('builder.course1')}</th>
+                    <th className="border border-gray-300 px-2 py-1.5 text-center font-medium">{t('builder.course2')}</th>
+                    <th className="border border-gray-300 px-2 py-1.5 text-center font-medium">{t('builder.totalScore')}</th>
+                  </tr>
+                  <tr>
+                    <td className="border border-gray-300 p-0">
+                      <input type="text" inputMode="numeric" value={resumeData.examInfo?.politics ?? ''} onChange={(e) => handleExamInfoChange('politics', e.target.value)} className="w-full border-0 rounded-none px-2 py-1.5 text-center text-sm" placeholder="—" />
+                    </td>
+                    <td className="border border-gray-300 p-0">
+                      <input type="text" inputMode="numeric" value={resumeData.examInfo?.english ?? ''} onChange={(e) => handleExamInfoChange('english', e.target.value)} className="w-full border-0 rounded-none px-2 py-1.5 text-center text-sm" placeholder="—" />
+                    </td>
+                    <td className="border border-gray-300 p-0">
+                      <input type="text" inputMode="numeric" value={resumeData.examInfo?.course1 ?? ''} onChange={(e) => handleExamInfoChange('course1', e.target.value)} className="w-full border-0 rounded-none px-2 py-1.5 text-center text-sm" placeholder="—" />
+                    </td>
+                    <td className="border border-gray-300 p-0">
+                      <input type="text" inputMode="numeric" value={resumeData.examInfo?.course2 ?? ''} onChange={(e) => handleExamInfoChange('course2', e.target.value)} className="w-full border-0 rounded-none px-2 py-1.5 text-center text-sm" placeholder="—" />
+                    </td>
+                    <td className="border border-gray-300 p-0">
+                      <input type="text" inputMode="numeric" value={resumeData.examInfo?.totalScore ?? ''} onChange={(e) => handleExamInfoChange('totalScore', e.target.value)} className="w-full border-0 rounded-none px-2 py-1.5 text-center text-sm" placeholder="—" />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <input value={resumeData.examInfo?.course1Name ?? ''} onChange={(e) => handleExamInfoChange('course1Name', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm" placeholder={t('builder.course1Remark')} />
+              <input value={resumeData.examInfo?.course2Name ?? ''} onChange={(e) => handleExamInfoChange('course2Name', e.target.value)} className="w-full border border-gray-300 rounded px-2 py-1 text-sm" placeholder={t('builder.course2Remark')} />
+            </div>
           </section>
 
           <section className="space-y-4">
