@@ -78,18 +78,26 @@ const SidebarInfo = ({ data }) => {
             <LinkIcon size={10} /> {t('preview.links')}
           </div>
           <ul className="space-y-1.5">
-            {links.filter((l) => l.label || l.url).map((link) => (
+            {links.filter((l) => l.label || l.url).map((link) => {
+              const url = link.url?.trim();
+              const label = link.label || link.url || t('preview.linkLabel');
+              return (
               <li key={link.id}>
-                <a
-                  href={link.url || '#'}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-indigo-600 hover:underline break-all"
-                >
-                  {link.label || link.url || t('preview.linkLabel')}
-                </a>
+                {url ? (
+                  <a
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-indigo-600 hover:underline break-all"
+                  >
+                    {label}
+                  </a>
+                ) : (
+                  <span className="text-xs text-gray-500 break-all">{label}</span>
+                )}
               </li>
-            ))}
+              );
+            })}
           </ul>
         </div>
       )}

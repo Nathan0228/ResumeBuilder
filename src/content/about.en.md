@@ -5,7 +5,7 @@
 **Resume Builder** is a lightweight, free online resume maker. You can:
 
 - **Choose a template**: Three styles—Modern, Classic, and GitHub Style.
-- **Edit sections**: Add or remove blocks (basic info, education, experience, skills, honors, etc.) and reorder them.
+- **Edit sections**: Add or remove blocks (basic info, education, experience, skills, honors, etc.).
 - **Live preview**: Edit on the left, see the result on the right in real time.
 - **Export PDF**: One-click export to A4 PDF for printing or job applications.
 
