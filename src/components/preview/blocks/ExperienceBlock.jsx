@@ -1,14 +1,15 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { formatDateRange } from '../../../utils/dateFormat';
+import { accentStyle } from '../../../utils/accentColor';
 
-const ExperienceBlock = ({ data }) => {
+const ExperienceBlock = ({ data, titleGap = 'mb-6', accent }) => {
   const { t } = useTranslation();
   const { experience } = data;
   if (!experience?.length) return null;
   return (
     <section>
-      <h3 className="text-xs font-bold text-gray-900 uppercase tracking-[0.2em] mb-6 border-l-4 border-indigo-600 pl-3">
+      <h3 className={`text-xs font-bold text-gray-900 uppercase tracking-[0.2em] ${titleGap} border-l-4 pl-3`} style={accentStyle(accent, 'borderColor')}>
         {t('blocks.experience')}
       </h3>
       <div className="space-y-8">
@@ -20,7 +21,7 @@ const ExperienceBlock = ({ data }) => {
                 {formatDateRange(exp.startDate, exp.endDate, exp.isPresent, exp.date, t('builder.present'))}
               </span>
             </div>
-            <div className="text-indigo-600 text-xs font-bold mb-3 uppercase tracking-wide">
+            <div className="text-xs font-bold mb-3 uppercase tracking-wide" style={accentStyle(accent, 'text')}>
               {exp.role}
             </div>
             <p className="text-[13px] text-gray-600 leading-relaxed whitespace-pre-line border-l border-gray-100 pl-4">

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Mail, Phone, MapPin, UserCircle, Link as LinkIcon } from 'lucide-react';
+import { accentStyle, getAccentDarkHex } from '../../utils/accentColor';
 
 const formatLocation = (personal, t) => {
   if (personal.country && personal.country !== 'OTHER') {
@@ -23,7 +24,7 @@ const formatGender = (gender, t) => {
   return gender;
 };
 
-const SidebarInfo = ({ data }) => {
+const SidebarInfo = ({ data, accent }) => {
   const { t } = useTranslation();
   const { personal } = data;
   const links = personal.links || [];
@@ -33,8 +34,8 @@ const SidebarInfo = ({ data }) => {
     <aside className="w-full flex flex-col border-r border-gray-200 pr-4 print:pr-2">
       {/* 头像 */}
       {personal.photo && (
-        <div className="w-20 h-20 rounded-full overflow-hidden border-2 border-gray-200 mb-4 mx-auto">
-          <img src={personal.photo} alt="" className="w-full h-full object-cover" />
+        <div className="w-30 h-30 rounded-full overflow-hidden border-2 border-gray-200 mb-4 mx-auto">
+          <img src={personal.photo} alt="" className="w-0.8 h-0.8 object-cover" />
         </div>
       )}
       <h1 className="text-lg font-bold text-gray-900 mb-0.5 leading-tight">
@@ -45,7 +46,13 @@ const SidebarInfo = ({ data }) => {
       {/* 联系方式 */}
       <div className="space-y-2 text-xs text-gray-600 mb-4">
         {personal.email && (
-          <a href={`mailto:${personal.email}`} className="flex items-center gap-2 hover:text-indigo-600 break-all">
+          <a
+            href={`mailto:${personal.email}`}
+            className="flex items-center gap-2 break-all"
+            style={accentStyle(accent, 'text')}
+            onMouseEnter={(e) => { e.currentTarget.style.color = getAccentDarkHex(accent); }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = accentStyle(accent, 'text').color; }}
+          >
             <Mail size={12} className="shrink-0 text-gray-400" />
             {personal.email}
           </a>
@@ -56,18 +63,18 @@ const SidebarInfo = ({ data }) => {
             {personal.phone}
           </div>
         )}
-        {locationText && (
-          <div className="flex items-center gap-2">
-            <MapPin size={12} className="shrink-0 text-gray-400" />
-            {locationText}
-          </div>
-        )}
         {(personal.gender || personal.age) && (
           <div className="flex items-center gap-2">
             <UserCircle size={12} className="shrink-0 text-gray-400" />
             {formatGender(personal.gender, t)}
             {personal.gender && personal.age ? ' / ' : ''}
             {personal.age ? `${personal.age}${t('preview.yearsOld')}` : ''}
+          </div>
+        )}
+        {locationText && (
+          <div className="flex items-center gap-2">
+            <MapPin size={12} className="shrink-0 text-gray-400" />
+            {locationText}
           </div>
         )}
       </div>
@@ -88,7 +95,10 @@ const SidebarInfo = ({ data }) => {
                     href={url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-xs text-indigo-600 hover:underline break-all"
+                    className="text-xs underline break-all"
+                    style={accentStyle(accent, 'text')}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = getAccentDarkHex(accent); }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = accentStyle(accent, 'text').color; }}
                   >
                     {label}
                   </a>

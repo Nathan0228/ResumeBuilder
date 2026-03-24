@@ -1,7 +1,8 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { accentStyle } from '../../../utils/accentColor';
 
-const ExamInfoBlock = ({ data }) => {
+const ExamInfoBlock = ({ data, titleGap = 'mb-6', accent }) => {
   const { t } = useTranslation();
   const exam = data.examInfo;
   if (!exam) return null;
@@ -15,8 +16,7 @@ const ExamInfoBlock = ({ data }) => {
     exam.course1 ||
     exam.course2 ||
     exam.course1Name ||
-    exam.course2Name ||
-    exam.totalScore;
+    exam.course2Name;
   if (!hasAny) return null;
 
   const degreeLabel =
@@ -28,7 +28,7 @@ const ExamInfoBlock = ({ data }) => {
 
   return (
     <section>
-      <h3 className="text-xs font-bold text-gray-900 uppercase tracking-[0.2em] mb-6 border-l-4 border-indigo-600 pl-3">
+      <h3 className={`text-xs font-bold text-gray-900 uppercase tracking-[0.2em] ${titleGap} border-l-4 pl-3`} style={accentStyle(accent, 'borderColor')}>
         {t('blocks.examInfo')}
       </h3>
       <div className="space-y-4">
@@ -51,15 +51,24 @@ const ExamInfoBlock = ({ data }) => {
                 <th className="border border-gray-300 px-3 py-2 text-center font-semibold text-gray-800">{t('builder.course1')}</th>
                 <th className="border border-gray-300 px-3 py-2 text-center font-semibold text-gray-800">{t('builder.course2')}</th>
                 <th className="border border-gray-300 px-3 py-2 text-center font-semibold text-gray-800">{t('builder.totalScore')}</th>
-                
               </tr>
               <tr>
                 <td className="border border-gray-300 px-3 py-2 text-center text-gray-800">{exam.politics || '—'}</td>
                 <td className="border border-gray-300 px-3 py-2 text-center text-gray-800">{exam.english || '—'}</td>
                 <td className="border border-gray-300 px-3 py-2 text-center text-gray-800">{exam.course1 || '—'}</td>
                 <td className="border border-gray-300 px-3 py-2 text-center text-gray-800">{exam.course2 || '—'}</td>
-                <td className="border border-gray-300 px-3 py-2 text-center text-gray-800">{exam.totalScore || '—'}</td>
-                
+                <td className="border border-gray-300 px-3 py-2 text-center font-semibold bg-gray-50" style={accentStyle(accent, 'textDark')}>
+                  {(() => {
+                    const scores = [
+                      parseFloat(exam.politics) || 0,
+                      parseFloat(exam.english) || 0,
+                      parseFloat(exam.course1) || 0,
+                      parseFloat(exam.course2) || 0,
+                    ];
+                    const allFilled = scores.every(s => s > 0);
+                    return allFilled ? scores.reduce((sum, s) => sum + s, 0) : '—';
+                  })()}
+                </td>
               </tr>
             </tbody>
           </table>

@@ -3,6 +3,7 @@ import BasicInfoBlock from './BasicInfoBlock';
 import SummaryBlock from './SummaryBlock';
 import SkillsBlock from './SkillsBlock';
 import ExperienceBlock from './ExperienceBlock';
+import ProjectsBlock from './ProjectsBlock';
 import EducationBlock from './EducationBlock';
 import HonorsBlock from './HonorsBlock';
 import InternshipsBlock from './InternshipsBlock';
@@ -15,6 +16,7 @@ export const BLOCK_COMPONENTS = {
   [BLOCK_IDS.SUMMARY]: SummaryBlock,
   [BLOCK_IDS.SKILLS]: SkillsBlock,
   [BLOCK_IDS.EXPERIENCE]: ExperienceBlock,
+  [BLOCK_IDS.PROJECTS]: ProjectsBlock,
   [BLOCK_IDS.EDUCATION]: EducationBlock,
   [BLOCK_IDS.HONORS]: HonorsBlock,
   [BLOCK_IDS.INTERNSHIPS]: InternshipsBlock,
@@ -22,4 +24,4 @@ export const BLOCK_COMPONENTS = {
   [BLOCK_IDS.EXAM_INFO]: ExamInfoBlock,
 };
 
-export { BasicInfoBlock, SummaryBlock, SkillsBlock, ExperienceBlock, EducationBlock, HonorsBlock, InternshipsBlock, CertificationsBlock, ExamInfoBlock };
+export { BasicInfoBlock, SummaryBlock, SkillsBlock, ExperienceBlock, ProjectsBlock, EducationBlock, HonorsBlock, InternshipsBlock, CertificationsBlock, ExamInfoBlock };

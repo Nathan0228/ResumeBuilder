@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { Mail, Phone, MapPin, UserCircle } from 'lucide-react';
+import { accentStyle } from '../../../utils/accentColor';
 
 /** 简历预览 - 基本信息区块（姓名、职位、联系方式、照片） */
 const formatLocation = (personal, t) => {
@@ -24,18 +25,18 @@ const formatGender = (gender, t) => {
   return gender;
 };
 
-const BasicInfoBlock = ({ data }) => {
+const BasicInfoBlock = ({ data, accent }) => {
   const { t } = useTranslation();
   const { personal } = data;
   const locationText = formatLocation(personal, t);
   const genderText = formatGender(personal.gender, t);
   return (
-    <header className="mb-10 border-b border-gray-200 pb-10 flex justify-between items-start">
+    <header className="mb-6 border-b border-gray-200 pb-6 flex justify-between items-start">
       <div className="flex-1">
         <h1 className="text-4xl font-extrabold text-gray-900 mb-2 tracking-tight">
           {personal.name}
         </h1>
-        <p className="text-xl text-indigo-600 font-medium mb-6">{personal.title}</p>
+        <p className="text-xl font-medium mb-6" style={accentStyle(accent, 'text')}>{personal.title}</p>
         <div className="grid grid-cols-2 gap-y-3 gap-x-6 text-sm text-gray-600">
           <div className="flex items-center gap-2 font-medium">
             <UserCircle size={14} className="text-gray-400" /> {genderText}{genderText && personal.age ? ' / ' : ''}{personal.age}{personal.age ? t('preview.yearsOld') : ''}

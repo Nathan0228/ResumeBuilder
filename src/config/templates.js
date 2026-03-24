@@ -6,6 +6,7 @@ export const BLOCK_IDS = {
   SUMMARY: 'summary',
   SKILLS: 'skills',
   EXPERIENCE: 'experience',
+  PROJECTS: 'projects',
   EDUCATION: 'education',
   HONORS: 'honors',
   INTERNSHIPS: 'internships',
@@ -19,6 +20,7 @@ export const BLOCK_LABEL_KEYS = {
   [BLOCK_IDS.SUMMARY]: 'blocks.summary',
   [BLOCK_IDS.SKILLS]: 'blocks.skills',
   [BLOCK_IDS.EXPERIENCE]: 'blocks.experience',
+  [BLOCK_IDS.PROJECTS]: 'blocks.projects',
   [BLOCK_IDS.EDUCATION]: 'blocks.education',
   [BLOCK_IDS.HONORS]: 'blocks.honors',
   [BLOCK_IDS.INTERNSHIPS]: 'blocks.internships',
@@ -81,12 +83,132 @@ export const TEMPLATES = [
     blockOrder:[
       BLOCK_IDS.BASIC_INFO,
       BLOCK_IDS.EDUCATION,
-      BLOCK_IDS.INTERNSHIPS,
-      BLOCK_IDS.EXPERIENCE,
-      BLOCK_IDS.SKILLS,
+      BLOCK_IDS.PROJECTS,
       BLOCK_IDS.CERTIFICATIONS,
+      BLOCK_IDS.SUMMARY,
     ]
   },
 ];
 
 export const DEFAULT_TEMPLATE_ID = 'modern';
+
+/**
+ * 主题色选项：name=显示名, color=Tailwind 色名, shade=数值 (50/100/200/300/400/500/600/700/800/900)
+ * 格式：bg-{color}-{shade}、text-{color}-{shadeText}、border-{color}-{shadeBorder}
+ */
+export const ACCENT_COLORS = [
+  {
+    id: 'indigo',
+    nameKey: 'accentColor.indigo',
+    color: 'indigo',
+    shade: 600,
+    shadeText: 600,
+    shadeBorder: 600,
+  },
+  {
+    id: 'blue',
+    nameKey: 'accentColor.blue',
+    color: 'blue',
+    shade: 600,
+    shadeText: 600,
+    shadeBorder: 600,
+  },
+  {
+    id: 'violet',
+    nameKey: 'accentColor.violet',
+    color: 'violet',
+    shade: 600,
+    shadeText: 600,
+    shadeBorder: 600,
+  },
+  {
+    id: 'purple',
+    nameKey: 'accentColor.purple',
+    color: 'purple',
+    shade: 600,
+    shadeText: 600,
+    shadeBorder: 600,
+  },
+  {
+    id: 'pink',
+    nameKey: 'accentColor.pink',
+    color: 'pink',
+    shade: 600,
+    shadeText: 600,
+    shadeBorder: 600,
+  },
+  {
+    id: 'rose',
+    nameKey: 'accentColor.rose',
+    color: 'rose',
+    shade: 600,
+    shadeText: 600,
+    shadeBorder: 600,
+  },
+  {
+    id: 'red',
+    nameKey: 'accentColor.red',
+    color: 'red',
+    shade: 600,
+    shadeText: 600,
+    shadeBorder: 600,
+  },
+  {
+    id: 'orange',
+    nameKey: 'accentColor.orange',
+    color: 'orange',
+    shade: 600,
+    shadeText: 600,
+    shadeBorder: 600,
+  },
+  {
+    id: 'amber',
+    nameKey: 'accentColor.amber',
+    color: 'amber',
+    shade: 600,
+    shadeText: 600,
+    shadeBorder: 600,
+  },
+  {
+    id: 'emerald',
+    nameKey: 'accentColor.emerald',
+    color: 'emerald',
+    shade: 600,
+    shadeText: 600,
+    shadeBorder: 600,
+  },
+  {
+    id: 'teal',
+    nameKey: 'accentColor.teal',
+    color: 'teal',
+    shade: 600,
+    shadeText: 600,
+    shadeBorder: 600,
+  },
+  {
+    id: 'cyan',
+    nameKey: 'accentColor.cyan',
+    color: 'cyan',
+    shade: 600,
+    shadeText: 600,
+    shadeBorder: 600,
+  },
+  {
+    id: 'gray',
+    nameKey: 'accentColor.gray',
+    color: 'gray',
+    shade: 600,
+    shadeText: 600,
+    shadeBorder: 600,
+  },
+  {
+    id: 'slate',
+    nameKey: 'accentColor.slate',
+    color: 'slate',
+    shade: 600,
+    shadeText: 600,
+    shadeBorder: 600,
+  },
+];
+
+export const DEFAULT_ACCENT_COLOR = 'indigo';

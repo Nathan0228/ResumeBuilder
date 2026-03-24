@@ -45,4 +45,22 @@
   <p style="text-align: center; color: #64748b; font-size: 0.98em; margin-top: 0.5em;">感谢支持 💖</p>
 </details>
 
+## Changelog
+
+### 2026-03-24
+- **New GitHub-style template**: Left sidebar layout, great for tech resumes
+- **Block adding UX improvements**: Fixed the issue where clicking to add blocks didn't work properly by switching from DOM selectors to refs
+- **Duplicate rendering fix**: Fixed a bug where basic info block was rendered twice in GitHub-style layout
+
+### 2026-03-23
+- **New Projects block**: Showcase your projects and achievements
+- **New Summary block**: Add a personal introduction paragraph at the top of your resume
+- **New title spacing control**: Customize the space between section titles and content
+
+### 2026-03-22
+- **New resume style templates**: Classic and sidebar layouts added
+- **New PDF export**: One-click export to A4 PDF for printing or sharing
+- **New dark accent colors**: Customizable accent color themes for your resume
+
+
 感谢使用，祝你求职顺利。

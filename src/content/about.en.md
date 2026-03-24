@@ -46,3 +46,10 @@ This site is developed and maintained by **[Nathan](https://github.com/Nathan022
 </details>
 
 Thanks for using—good luck with your job search.
+
+## Changelog
+
+### 2026-03-24
+- **Customize the color**: Choose a color that you like and change it;
+
+
